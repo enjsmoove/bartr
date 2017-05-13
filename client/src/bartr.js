@@ -50,9 +50,11 @@ class Routing extends React.Component {
             <Route path='/home' component={HomeContainer}/>
             <Route path='/profile' component={ProfileContainer}/>
             <Route path='/servicegraph' component={ServiceGraph}/>
+            <Route path='/profile/:auth0_id' component={ProfileContainer}/>
             <Route path='/currentengagements' component={EngageReq}/>
             <Route path='/map' component={ServiceMapContainer}/>
             <Route path='/editprofile' component={EditProfile}/>
+            <Route path='/editprofile/:auth0_id' component={EditProfile}/>
             <Route path='/pastengagements' component={PastEngagements}/>
           </Route>
         </Router>

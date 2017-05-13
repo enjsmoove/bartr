@@ -6,6 +6,8 @@ import { PageHeader } from 'react-bootstrap';
 import axios from 'axios';
 import './styles/userProfileStyles.css';
 
+
+
 class UserProfile extends React.Component {
   constructor (props) {
     super (props);
@@ -60,37 +62,68 @@ class UserProfile extends React.Component {
     return hash;
   }
   fetchUser() {
-    console.log('stuff is ',this.hashCode(this.props.children.props.params.auth0_id))
-    let auth = hashCode(hashthis.props.children.props.params.auth0_id) || JSON.parse(localStorage.profile).user_id
     const config = {
       headers: {
         'Authorization': 'Bearer ' + localStorage.id_token
       }
     }
-    axios.get(API_ENDPOINT + `/api/users/${auth}`, config)
-    .then((res) => {
-
-        console.log("the response inside axios.get of UserProfile is ", res);
-
-        let userService = null;
-        _.each(this.state.listOfServices, (service) => {
-          if (service.value === res.data.service_id) {
-            userService = service.text;
-          }
+    let auth = ''
+    //if loading a different users profile
+    if(this.props.children.props.params.auth0_id){
+      let hash =this.props.children.props.params.auth0_id;
+      axios.get(API_ENDPOINT + `/api/users/hash/${hash}`, config)
+      .then(data => {
+        auth = data.data.auth0_id
+        console.log(data)
+        console.log('auth is:',auth)
+        axios.get(API_ENDPOINT + `/api/users/${auth}`, config)
+        .then((res) => {
+          console.log("the response inside axios.get of UserProfile is ", res);
+          let userService = null;
+          _.each(this.state.listOfServices, (service) => {
+            if (service.value === res.data.service_id) {
+              userService = service.text;
+            }
+          })
+          this.setState({...this.state,
+            name: res.data.name,
+            address: res.data.address,
+            service: userService,
+            lat: res.data.geo_lat,
+            lng: res.data.geo_long,
+            avgRating: res.data.service_provider_average_rating,
+          })
+          this.loadMap();
         })
-        this.setState({...this.state,
-          name: res.data.name,
-          address: res.data.address,
-          service: userService,
-          lat: res.data.geo_lat,
-          lng: res.data.geo_long,
-          avgRating: res.data.service_provider_average_rating,
+        .catch(err => {
+          console.log('Error in fetchUsers in UserProfile: ', err);
         })
-        this.loadMap();
       })
-      .catch(err => {
-        console.log('Error in fetchUsers in UserProfile: ', err);
-      })
+      } else {
+        auth = JSON.parse(localStorage.profile).user_id
+        axios.get(API_ENDPOINT + `/api/users/${auth}`, config)
+        .then((res) => {
+          console.log("the response inside axios.get of UserProfile is ", res);
+          let userService = null;
+          _.each(this.state.listOfServices, (service) => {
+            if (service.value === res.data.service_id) {
+              userService = service.text;
+            }
+          })
+          this.setState({...this.state,
+            name: res.data.name,
+            address: res.data.address,
+            service: userService,
+            lat: res.data.geo_lat,
+            lng: res.data.geo_long,
+            avgRating: res.data.service_provider_average_rating,
+          })
+          this.loadMap();
+        })
+        .catch(err => {
+          console.log('Error in fetchUsers in UserProfile: ', err);
+        })
+      }
   }
 
   loadMap() {
@@ -129,8 +162,7 @@ class UserProfile extends React.Component {
 
   render() {
     console.log(this.state)
-    const auth = this.props.children.props.params.auth0_id || JSON.parse(localStorage.profile).user_id;
-    const editpoint = `/editprofile/${auth}`
+    const editpoint = `/editprofile/${JSON.parse(localStorage.profile).user_id}`
     return(
       <div className='body'>
         <div className="profile-page-content">
@@ -144,8 +176,10 @@ class UserProfile extends React.Component {
               <p className="service">{this.state.service ? this.state.service : null}</p>
               <p><span className="address">Average Service Provider Rating:</span><span className="service">{this.state.avgRating === null ? 0 : this.state.avgRating}</span></p>
             </div>
-            <div className="address">{this.state.address ? this.state.address : null}</div>
-            <Link to={editpoint} ><button>Edit Profile</button></Link>
+            <div className={this.props.children.props.params.auth0_id ? '' : 'hidden'}>
+              <Link to={editpoint} ><button>Edit Profile</button></Link>
+          </div>
+
           </div>
           <div className="google-maps" ref="map"/>
         </div>

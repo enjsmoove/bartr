@@ -280,9 +280,9 @@ class EditProfile extends React.Component {
         </Form.Field>
         <Form.Field>
           <label style={{marginTop: '25px', fontSize: '20px', color: 'black'}}>Upload Profile Picture</label>
-          <Dropzone onDrop={this.onDrop} multiple={false}>
+          <center><Dropzone onDrop={this.onDrop} multiple={false}>
             <div>Try dropping a file here, or click to select a file to upload.</div>
-          </Dropzone>
+          </Dropzone></center>
         </Form.Field>
         <h1><Button type='button' onClick={this.handleSubmit}>Submit</Button></h1>
       </Form>

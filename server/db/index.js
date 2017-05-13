@@ -43,7 +43,7 @@ const Message = sql.define('message', {
 			allowNull: false
 		}
 });
- 
+
 const Review = sql.define('review', {
 		score: {
 			type: Sequelize.INTEGER,
@@ -136,7 +136,7 @@ const ServiceTransaction = sql.define('service_transaction', {
 	sender_svc_units: {
 		type: Sequelize.INTEGER,
 		defaultValue: 0
-	}, 
+	},
 	receiver_svc_units: {
 		type: Sequelize.INTEGER,
 		defaultValue: 0,
@@ -162,9 +162,22 @@ const ServiceTransaction = sql.define('service_transaction', {
 	}
 })
 
+//table for hashing auth0 id for url lookup
+const AuthLookup = sql.define('authlookup', {
+	hash: {
+		type: Sequelize.STRING,
+		allowNull: false
+	},
+	auth0_id: {
+		type: Sequelize.STRING,
+		allowNull: false
+	},
+});
+
 User.belongsTo(Service);
 Service.hasMany(User);
 User.hasOne(ServiceValue);
+User.hasOne(AuthLookup);
 ServiceValue.belongsTo(Service);
 Service.hasMany(ServiceValue);
 AverageASV.belongsTo(Service);
@@ -199,6 +212,9 @@ Review.belongsTo(User,  { as: 'receiver', foreignKey: { name: 'receiver_id', all
 User.hasMany(Review, { as: 'sent_reviews', foreignKey: 'sender_id'});
 User.hasMany(Review, { as: 'received_reviews',foreignKey: 'receiver_id'});
 
+AuthLookup.sync();
+
+module.exports.AuthLookup = AuthLookup;
 module.exports.User = User;
 module.exports.Service = Service;
 module.exports.ServiceValue = ServiceValue;
