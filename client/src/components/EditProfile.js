@@ -255,11 +255,11 @@ class EditProfile extends React.Component {
         <label style={{fontSize: '20px', color: 'black'}}>Service</label>
         {this.renderCurrentService()}
         <br/>
-        <center><Dropdown style={{width: '400px', height: '5px', fontSize: '15px', position: 'absolute'}}
+        <Dropdown style={{width: '400px', height: '5px', fontSize: '15px', position: 'absolute'}}
           placeholder='Select Service'
           value={this.state.service}
           fluid selection options={this.state.listOfServices}
-          onChange={this.serviceChange} /></center>
+          onChange={this.serviceChange} />
         <br/>
         <br/>
         <br/>
@@ -280,9 +280,9 @@ class EditProfile extends React.Component {
         </Form.Field>
         <Form.Field>
           <label style={{marginTop: '25px', fontSize: '20px', color: 'black'}}>Upload Profile Picture</label>
-          <Dropzone onDrop={this.onDrop} multiple={false}>
+          <center><Dropzone onDrop={this.onDrop} multiple={false}>
             <div>Try dropping a file here, or click to select a file to upload.</div>
-          </Dropzone>
+          </Dropzone></center>
         </Form.Field>
         <h1><Button type='button' onClick={this.handleSubmit}>Submit</Button></h1>
       </Form>

@@ -1,7 +1,7 @@
 'use strict';
 
 const Sequelize = require('sequelize');
-const { User } = require('../db');
+const { User, AuthLookup } = require('../db');
 const db = require('../db');
 const Service = require('../db/index').Service;
 const router = require('express').Router();
@@ -35,6 +35,45 @@ router.post('/', (req, res, next) => {
     .catch(Sequelize.UniqueConstraintError, () => {
       res.status(400).end('User creation failed due to duplicate email address');
     })
+})
+
+router.get('/hash/:hash', (req, res, next) => {
+  AuthLookup.find({ where: {hash: req.params.hash}})
+  .then(data =>{
+    res.send(data)
+  })
+})
+
+router.post('/hash', (req, res, next) => {
+  console.log('got some shit')
+  // res.send('litty again')
+  AuthLookup.sync().then(function() {
+    AuthLookup.findOrCreate({
+      where: {
+        auth0_id: req.body.auth0_id
+      },
+      defaults: { // set the default properties if it doesn't exist
+        auth0_id: req.body.auth0_id,
+        hash: req.body.hash,
+      }
+    }).then(result => {
+      var user = result[0], // the instance of the author
+        created = result[1]; // boolean stating if it was created or not
+
+      if (created) {
+        console.log('User already exists');
+      }
+
+      console.log('Created user...');
+      res.send(result)
+    });
+  })
+  //  console.log(created)
+  //  res.status(201).send(user)
+  // AuthLookup.upsert({auth0_id:req.body.auth0_id, hash:req.body.hash})
+  // })÷
+  // .then(data => {
+  // res.send(req.body)
 })
 
 router.put('/', (req, res, next) => {
