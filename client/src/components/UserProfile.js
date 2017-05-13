@@ -176,7 +176,7 @@ class UserProfile extends React.Component {
               <p className="service">{this.state.service ? this.state.service : null}</p>
               <p><span className="address">Average Service Provider Rating:</span><span className="service">{this.state.avgRating === null ? 0 : this.state.avgRating}</span></p>
             </div>
-            <div className={this.props.children.props.params.auth0_id ? '' : 'hidden'}>
+            <div className={this.props.children.props.params.auth0_id ? 'hidden' : ''}>
               <Link to={editpoint} ><button>Edit Profile</button></Link>
           </div>
 
